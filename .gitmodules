@@ -11,3 +11,6 @@
 [submodule "lib/chainlink"]
 	path = lib/chainlink
 	url = https://github.com/smartcontractkit/chainlink
+[submodule "lib/aavegotchi-contracts"]
+	path = lib/aavegotchi-contracts
+	url = https://github.com/aavegotchi/aavegotchi-contracts
