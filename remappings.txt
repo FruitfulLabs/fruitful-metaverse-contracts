@@ -2,3 +2,4 @@
 ds-test/=lib/ds-test/src/
 @solidstate/=lib/solidstate-solidity/
 @chainlink/=lib/chainlink/
+@aavegotchi/=lib/aavegotchi-contracts/
