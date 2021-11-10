@@ -11,7 +11,7 @@ import "./Hevm.sol";
 
 abstract contract GenesisFruitfulBaseCharacterTest is DSTest {
   Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
-  DLC dlc;
+  DLC internal dlc;
 
   // contracts
   GenesisFruitfulBaseCharacter internal genesisFBC;
