@@ -21,3 +21,7 @@ then
 else
   export DAPP_TEST_FUZZ_RUNS=100 # Only fuzz briefly if DEEP_FUZZ is not set to true.
 fi
+
+# eww.
+export $(grep -v '#.*' .env | xargs)
+export ETH_RPC_URL=https://polygon-mainnet.g.alchemy.com/v2/"$ALCHEMY_API_KEY"

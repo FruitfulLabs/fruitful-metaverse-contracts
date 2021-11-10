@@ -45,6 +45,10 @@ endif
 # Returns the URL to deploy to a hosted node.
 # Requires the ALCHEMY_API_KEY env var to be set.
 # The first argument determines the network (mainnet / rinkeby / ropsten / kovan / goerli)
+# define network
+# https://eth-$1.alchemyapi.io/v2/${ALCHEMY_API_KEY}
+# endef
+
 define network
-https://eth-$1.alchemyapi.io/v2/${ALCHEMY_API_KEY}
+https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}
 endef
