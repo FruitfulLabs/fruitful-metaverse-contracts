@@ -4,6 +4,9 @@ pragma solidity ^0.8.0;
 
 library BaseCharacterStorage {
   struct Layout {
+    uint256 baseCharMaxSupply;
+    /// @dev we only want each wallet to be able to own 1 base character
+    mapping(address => uint256) baseCharId;
     /// @note The following are attributes of a genesis base character in the Fruitful Metaverse
     /// @note Core Attributes
     mapping(uint256 => uint256) xp;

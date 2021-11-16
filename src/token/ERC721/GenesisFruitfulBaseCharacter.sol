@@ -8,6 +8,9 @@ import "@solidstate/contracts/token/ERC721/metadata/ERC721Metadata.sol";
 
 import "../../BaseCharacterStorage.sol";
 import "../../CharacterSkillsStorage.sol";
+// import "../../AccessControlStorage.sol";
+
+import {OwnableStorage} from "@solidstate/contracts/access/Ownable.sol";
 
 interface DLC {
   function balanceOf(address) external returns (uint256);
@@ -15,6 +18,8 @@ interface DLC {
 
 contract GenesisFruitfulBaseCharacter is ERC721 {
   DLC dlc;
+
+  event PopulationGrowth(uint256 indexed baseCharMaxSupply);
 
   /// @dev the name, symbol, and baseURI is set on deployment.
   constructor(
@@ -28,19 +33,30 @@ contract GenesisFruitfulBaseCharacter is ERC721 {
     l.baseURI = baseURI;
   }
 
+  /// @notice metaverse admin sets max number of base characters according to the population growth schedule
+  function setBaseCharMaxSupply(uint256 baseCharMaxSupply) external {
+    // AccessControlStorage.Layout storage ac = AccessControlStorage.layout();
+    OwnableStorage.Layout storage os = OwnableStorage.layout();
+    require(msg.sender == os.owner, "setBaseCharMax: not owner");
+
+    BaseCharacterStorage.Layout storage l = BaseCharacterStorage.layout();
+    require(l.baseCharMaxSupply < 100_000, "setBaseCharMax: possible supply cannot be more than theoretical max");
+
+    l.baseCharMaxSupply = baseCharMaxSupply;
+    emit PopulationGrowth(baseCharMaxSupply);
+  }
+
   function mintGenesisCharacter(
     address player,
     uint256 tokenId /// returns (uint256)
   ) public {
     dlc = DLC(0x69bdE563680f580A2da5b5d4E202ecA4FDF35664);
-    require(
-      dlc.balanceOf(player) >= 10 * 10**18,
-      "mintGenesisCharacter: Love balance is not enough"
-    );
-    require(
-      totalSupply() <= 2_000,
-      "mintGenesisCharacter: total supply is > 2_000"
-    );
+    require(dlc.balanceOf(player) >= 10 * 10**18, "mintGenesisCharacter: Love balance is not enough");
+    // ERC721MetadataStorage.Layout storage erc = ERC721MetadataStorage.layout();
+    /// @dev cannot be set to a number lower than the current total supply
+    // BaseCharacterStorage.Layout storage l = BaseCharacterStorage.layout();
+    // require(erc.totalSupply() < l.baseCharMaxSupply, "mintGenesisCharacter: total supply is > 2_000");
+    // require(erc.totalSupply() < , "setBaseCharMax: cannot mint more than setBaseCharMax");
 
     _mint(player, tokenId);
   }
@@ -54,14 +70,8 @@ contract GenesisFruitfulBaseCharacter is ERC721 {
     uint256 ethDonationAmount
   ) public payable {
     dlc = DLC(0x69bdE563680f580A2da5b5d4E202ecA4FDF35664);
-    require(
-      dlc.balanceOf(player) >= 10 * 10**18,
-      "mintGenesisCharacter: Love balance is not enough"
-    );
-    require(
-      totalSupply() <= 2_000,
-      "mintGenesisCharacter: total supply is > 2_000"
-    );
+    require(dlc.balanceOf(player) >= 10 * 10**18, "mintGenesisCharacter: Love balance is not enough");
+    require(totalSupply() <= 2_000, "mintGenesisCharacter: total supply is > 2_000");
 
     BaseCharacterStorage.Layout storage l = BaseCharacterStorage.layout();
     l.empathy[player] = ethDonationAmount;

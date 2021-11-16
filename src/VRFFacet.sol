@@ -4,8 +4,15 @@ pragma solidity ^0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/VRFRequestIDBase.sol";
 
+import "@solidstate/contracts/token/ERC721/metadata/ERC721Metadata.sol";
+
 import "./VRFStorage.sol";
 import "./BaseCharacterStorage.sol";
+import "@solidstate/contracts/token/ERC721/base/ERC721BaseStorage.sol";
+
+import "@solidstate/contracts/token/ERC721/ERC721.sol";
+
+import "./interfaces/IERC20.sol";
 
 /** ****************************************************************************
  * @notice Interface for contracts using VRF randomness
@@ -101,10 +108,53 @@ import "./BaseCharacterStorage.sol";
  * @dev until it calls responds to a request.
  */
 
-contract VRFFacet {
+interface DLC {
+  function balanceOf(address) external returns (uint256);
+
+  /// TODO add burn function to DLC
+  function transfer(address, uint256) external returns (bool);
+
+  function transferFrom(
+    address,
+    address,
+    uint256
+  ) external returns (bool);
+
+  function approve(address, uint256) external returns (bool);
+}
+
+contract VRFFacet is ERC721 {
+  DLC dlc = DLC(0x69bdE563680f580A2da5b5d4E202ecA4FDF35664);
+  IERC20 weth = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+
+  /// @dev the name, symbol, and baseURI is set on deployment.
+  constructor(
+    string memory name,
+    string memory symbol,
+    string memory baseURI
+  ) {
+    ERC721MetadataStorage.Layout storage l = ERC721MetadataStorage.layout();
+    l.name = name;
+    l.symbol = symbol;
+    l.baseURI = baseURI;
+  }
+
   /// @dev 1. player mints a base character NFT
-  function mintGenesis(uint256 _tokenId) external {
-    requestRandomness(_tokenId);
+  /// TODO add whitelist
+  function mintGenesis(uint256 _tokenId, uint256 _donation) external {
+    // require(  )
+    require(dlc.balanceOf(msg.sender) >= 10e18, "mintGenesisCharacter: Love balance is not enough");
+
+    BaseCharacterStorage.Layout storage bcs = BaseCharacterStorage.layout();
+
+    /// @dev player can only mint 1
+    // require(erc.holderTokens[msg.sender].length() == 0, "mintGenesis: msg.sender balance > 0");
+    require(bcs.baseCharId[msg.sender] == 0, "mintGenesis: msg.sender balance > 0");
+
+    dlc.transferFrom(msg.sender, 0x000000000000000000000000000000000000dEaD, 10e18);
+    // dlc.transfer(0x000000000000000000000000000000000000dEaD, 10e18);
+
+    // requestRandomness(_tokenId);
   }
 
   /// @dev 2. chainlink gods are requested to bestow us with a random number

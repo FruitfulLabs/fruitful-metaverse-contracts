@@ -19,8 +19,16 @@ if [ "$DEEP_FUZZ" == "true" ]
 then 
   export DAPP_TEST_FUZZ_RUNS=50000 # Fuzz for a long time if DEEP_FUZZ is set to true.
 else
-  export DAPP_TEST_FUZZ_RUNS=100 # Only fuzz briefly if DEEP_FUZZ is not set to true.
+  export DAPP_TEST_FUZZ_RUNS=10 # Only fuzz briefly if DEEP_FUZZ is not set to true.
 fi
+
+# set caller and origin of tx
+# export DAPP_TEST_CALLER=0xc08447776C10F3bfEb92eF9FA9acd61505E55C60 # account with 123 Love
+# export DAPP_TEST_ORIGIN=0xc08447776C10F3bfEb92eF9FA9acd61505E55C60
+# export DAPP_TEST_CALLER=0x287300059f50850d098b974AbE59106c4F52c989 # account with 123 Love
+# export DAPP_TEST_ORIGIN=0x287300059f50850d098b974AbE59106c4F52c989
+
+# DAPP_TEST_BALANCE=0xffffffffffffffffffffffff
 
 # eww.
 export $(grep -v '#.*' .env | xargs)
