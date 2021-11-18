@@ -71,16 +71,16 @@ contract GenesisFruitfulBaseCharacter is ERC721 {
   ) public payable {
     dlc = DLC(0x69bdE563680f580A2da5b5d4E202ecA4FDF35664);
     require(dlc.balanceOf(player) >= 10 * 10**18, "mintGenesisCharacter: Love balance is not enough");
-    require(totalSupply() <= 2_000, "mintGenesisCharacter: total supply is > 2_000");
+    require(totalSupply() < 2_000, "mintGenesisCharacter: total supply is > 2_000");
 
     BaseCharacterStorage.Layout storage l = BaseCharacterStorage.layout();
-    l.empathy[player] = ethDonationAmount;
+    l.empathy[tokenId] = ethDonationAmount;
     _mint(player, tokenId);
   }
 
   /// @notice temporary view helper methods
-  function viewEmpathy(address player) public view returns (uint256) {
-    return BaseCharacterStorage.layout().empathy[player];
+  function viewEmpathy(uint256 _tokenId) public view returns (uint256) {
+    return BaseCharacterStorage.layout().empathy[_tokenId];
   }
 }
 /// @kevin-fruitful change solidstate app storage hash to fruitful at the end of dev

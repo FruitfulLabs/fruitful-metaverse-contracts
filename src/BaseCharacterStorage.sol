@@ -15,7 +15,8 @@ library BaseCharacterStorage {
     mapping(uint256 => uint256) mana;
     /// @note Emotional Attributes
     mapping(address => uint256) happiness;
-    mapping(address => uint256) empathy;
+    // mapping(address => uint256) empathy;
+    mapping(uint256 => uint256) empathy;
     mapping(address => uint256) luckiness;
     mapping(address => uint256) patience;
     mapping(address => uint256) sadness;

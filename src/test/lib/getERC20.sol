@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "../../interfaces/uniswapv2.sol";
+import "../../interfaces/weth.sol";
 
 contract GetERC20 {
   /// @dev polygon addresses
@@ -36,5 +39,21 @@ contract GetERC20 {
     uint256 maticAmount = ins[0];
 
     quickR.swapETHForExactTokens{value: maticAmount}(_amount, path, address(this), block.timestamp + 60);
+  }
+
+  function getERC20WithMatic(address token, uint256 _maticAmount) public virtual {
+    if (token == wmatic) {
+      _getWMatic(_maticAmount);
+    } else {
+      address[] memory path = new address[](2);
+      path[0] = wmatic;
+      path[1] = token;
+
+      quickR.swapExactETHForTokens{value: _maticAmount}(0, path, address(this), block.timestamp + 60);
+    }
+  }
+
+  function _getWMatic(uint256 _maticAmount) internal virtual {
+    WETH(wmatic).deposit{value: _maticAmount}();
   }
 }

@@ -141,20 +141,39 @@ contract VRFFacet is ERC721 {
 
   /// @dev 1. player mints a base character NFT
   /// TODO add whitelist
-  function mintGenesis(uint256 _tokenId, uint256 _donation) external {
-    // require(  )
+  function mintGenesis(uint256 _donation) external {
     require(dlc.balanceOf(msg.sender) >= 10e18, "mintGenesisCharacter: Love balance is not enough");
 
     BaseCharacterStorage.Layout storage bcs = BaseCharacterStorage.layout();
 
     /// @dev player can only mint 1
     // require(erc.holderTokens[msg.sender].length() == 0, "mintGenesis: msg.sender balance > 0");
-    require(bcs.baseCharId[msg.sender] == 0, "mintGenesis: msg.sender balance > 0");
+    // require(bcs.baseCharId[msg.sender] == 0, "mintGenesis: msg.sender balance > 0");
+    require(balanceOf(msg.sender) == 0, "mintGenesis: msg.sender NFT balance > 0");
+
+    require(totalSupply() < 2_000, "2_000 already exist");
 
     dlc.transferFrom(msg.sender, 0x000000000000000000000000000000000000dEaD, 10e18);
     // dlc.transfer(0x000000000000000000000000000000000000dEaD, 10e18);
 
-    // requestRandomness(_tokenId);
+    uint256 prevTokenId = totalSupply();
+    uint256 newTokenId = prevTokenId + 1;
+
+    if (_donation > 0) {
+      if (weth.balanceOf(msg.sender) >= _donation) {
+        // weth.transfer(address(this), _donation);
+        weth.transferFrom(msg.sender, address(this), _donation);
+        bcs.empathy[newTokenId] + _donation;
+      }
+    }
+
+    // ERC721BaseStorage.Layout storage l = ERC721BaseStorage.layout();
+
+    // TODO implement on721Received in test contract
+    // _safeMint(msg.sender, prevTokenId + 1);
+    _mint(msg.sender, newTokenId);
+
+    requestRandomness(newTokenId);
   }
 
   /// @dev 2. chainlink gods are requested to bestow us with a random number
@@ -212,5 +231,10 @@ contract VRFFacet is ERC721 {
     if (_link != address(0)) {
       s.link = LinkTokenInterface(_link);
     }
+  }
+
+  /// @notice temporary view helper methods
+  function viewEmpathy(uint256 _tokenId) public view returns (uint256) {
+    return BaseCharacterStorage.layout().empathy[_tokenId];
   }
 }
